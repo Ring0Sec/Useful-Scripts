@@ -47,12 +47,12 @@ get_all_cmds() {
     for i in $(ps -Ao pid); do
         if [ $i != "PID" ]; then # TODO: MAKE THIS LESS HACKISH!
             #echo $($0 $i);
-            echo `$0 $i` >> output.txt;
+            echo `$0 $i` >> output.txt; # Evaluate PID's bin and add it to output.txt for further processing (below)
         fi
     done
-    sed '/^$/d' ~/Desktop/output.txt > output2.txt
-    cat output2.txt
-    rm output2.txt && rm output.txt
+    sed '/^$/d' ~/Desktop/output.txt > output2.txt # Clean up whitespace. Why is that even there anyway?
+    cat output2.txt # Finally display output
+    rm output2.txt && rm output.txt # Always clean up after yourself
 
 }
 
