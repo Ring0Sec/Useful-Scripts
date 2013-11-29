@@ -52,7 +52,7 @@ get_all_cmds() {
     done
     # sed '/^$/d' ~/Desktop/output.txt > output2.txt # Clean up whitespace. Why is that even there anyway?
     # cat output2.txt # Finally display output
-    # rm output2.txt && rm output.txt # Always clean up after yourself
+    # rm output2.txt && rm output.txt # Always clean up after yourself!
 
 }
 
