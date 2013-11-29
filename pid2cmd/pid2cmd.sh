@@ -50,9 +50,9 @@ get_all_cmds() {
             echo `$0 $i` >> output.txt; # Evaluate PID's bin and add it to output.txt for further processing (below)
         fi
     done
-    sed '/^$/d' ~/Desktop/output.txt > output2.txt # Clean up whitespace. Why is that even there anyway?
-    cat output2.txt # Finally display output
-    rm output2.txt && rm output.txt # Always clean up after yourself
+    # sed '/^$/d' ~/Desktop/output.txt > output2.txt # Clean up whitespace. Why is that even there anyway?
+    # cat output2.txt # Finally display output
+    # rm output2.txt && rm output.txt # Always clean up after yourself
 
 }
 
