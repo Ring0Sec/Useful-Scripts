@@ -45,7 +45,7 @@ run_updater() {
 	strlength=$(echo $2 | wc -c)
 	if ! [ -z "$2" ] && [ "$2" != "--force" ] && [ "$strlength" = "41" ]; then # strlength = sizeof(sha1sum) + "\0"
 		# TODO
-		ls > /dev/null # Delete this
+		echo "Updating to specific revisions is not yet implemented. Sorry."
 	else
 		# Hard-coded program updates URL
 		updates_url="https://raw.github.com/CP-Team-06-0003/Useful-Scripts/master/pid2cmd/pid2cmd.sh"
