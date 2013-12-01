@@ -15,25 +15,35 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 show_usage() {
+	
 	echo "Uses passwd -l to lock all the user accounts passed as arguments"
+
 }
 
 run() {
+	
 	for i in $@
 	do
+	
 		echo "Locking $i"
 		echo $(passwd -l $i)
 	done
+	
 }
 
 init() {
+	
 	if [ -z "$1" ]; then
+	
 		echo "No arguments provided!"
 	elif [ "$1" = "--help" ]; then
+	
 		show_usage
 	else 
+	
 		run $@
 	fi
+
 }
 
 init $1
