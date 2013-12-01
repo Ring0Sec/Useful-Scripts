@@ -21,8 +21,8 @@ show_usage(){
 
 	echo -e "pid2cmd version 0.1.2, by Josh Max (Bitwise) and Seth Johnson.\n"
 	echo "ABOUT:" $0 "| Dumps the command used to execute a selected process."
-	echo "USAGE:" $0 "-a, --all | List the commands of all processes."
-	echo "      " $0 "--update (--force) | Check for updates to this script."
+	echo "USAGE:" $0 "-a, --all (--with-pid) | List the commands of all processes."
+	echo "      " $0 "--update (--force/SHA1) | Check for updates to this script."
 	echo "      " $0 "[PID]"
 
 }
@@ -37,9 +37,10 @@ run_updater() {
 	fi
 
 	# Hard-coded program updater URL
-	updater_url="https://raw.github.com/CP-Team-06-0003/Useful-Scripts/master/UsefulScriptUpdater/usu.sh"
+	echo "Downloading updater..."
+	updater_url="https://raw.github.com/CP-Team-06-0003/Useful-Scripts/testing/UsefulScriptUpdater/usu.sh"
 	temp_usu_save_file="/tmp/usu_updater_$RANDOM.sh"
-	curl $updater_url > $temp_usu_save_file 2>&1
+	curl -# $updater_url > $temp_usu_save_file
 	chmod 755 $temp_usu_save_file
 
 	# Start USU
@@ -58,9 +59,23 @@ get_cmd() {
 		show_usage;
 	else
 
-		if ! [ -f "/proc/$1/cmdline" ]; then # Check if the PID exists
+    	# Check to see if the PID has a valid cmdline (1)
+    	if [ "$1" == "" ]; then
 
-			echo "Error proccessing PID $1. File does not exist."
+    		echo "Unknown PID commandline"
+    	elif ! [ -f "/proc/$1/cmdline" ]; then
+
+    		pidecho="PID is missing /proc/$1/cmdline"
+
+    		# More checks
+    		if ! [ -f "/proc/$1" ]; then
+
+    			pidecho="PID is missing from the procfs!"
+    		fi
+
+
+    		# Echo it
+    		echo $pidecho
 		else
 
 			cat /proc/$1/cmdline | sed 's/\x0/ /g' | strings # Strip out null characters
@@ -73,10 +88,37 @@ get_all_cmds() {
 
     for i in $(ps -Ao pid); do
 
-        if [ $i != "PID" ]; then # TODO: MAKE THIS LESS HACKISH!
+    	# ps bug: Check to see if the pid is "PID"
+    	if [ "$i" != "PID" ]; then # TODO: MAKE THIS LESS HACKISH!
 
-        	echo $($0 $i) | sed '/^$/d'  # Evaluate PID's bin and add it to output.txt for further processing (below)
-        fi
+    		# Check to see if the PID has a valid cmdline (2)
+    		if [ "$($0 $i | sed '/^$/d')" == "" ]; then
+
+    			echo "$i:Unknown PID commandline"
+    			continue
+    		elif ! [ -f "/proc/$i/cmdline" ]; then
+
+    			pidecho="$i:PID is missing /proc/$i/cmdline"
+
+    			# More checks
+    			if ! [ -f "/proc/$i" ]; then
+
+    				pidecho="$i:PID is missing from the procfs!"
+    			fi
+
+    			# Echo it
+    			echo $pidecho
+	   			continue
+	   		fi
+
+        	if [[ "$2" != "--with-pid" ]]; then
+
+        		echo "$($0 $i | sed '/^$/d')" # Evaluate and print the the commands of all pids and print them to stdout
+        	else
+
+        		echo "$i:$($0 $i | sed '/^$/d')" # Same as above, but this time prepend the PID before the command
+        	fi
+		fi
     done
 
 }
@@ -88,7 +130,7 @@ init() {
 		show_usage # Argument paramater can not be empty
 	elif [ "$1" = "-a" ] || [ "$1" = "--all" ]; then
 
-        get_all_cmds # Print out the commands of all processes
+        get_all_cmds "$1" "$2" # Print out the commands of all processes
 	elif [ "$1" = "--update" ]; then
 
         run_updater "$1" "$2" # Check for script updates (Advanced options) force an update to a certain revision
