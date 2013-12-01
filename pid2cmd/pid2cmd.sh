@@ -1,5 +1,5 @@
 #!/bin/bash
- 
+
 # pid2cmd
 # Copyright (C) 2013 Josh Max
 #
@@ -123,7 +123,7 @@ get_cmd() {
 }
 
 get_all_cmds() {
-    
+
     for i in $(ps -Ao pid); do
 
         if [ $i != "PID" ]; then # TODO: MAKE THIS LESS HACKISH!
