@@ -38,16 +38,14 @@ run_updater() {
 
 	# Hard-coded program updater URL
 	updater_url="https://raw.github.com/CP-Team-06-0003/Useful-Scripts/master/UsefulScriptUpdater/usu.sh"
-	temp_save_file="/tmp/usu_updater_$RANDOM.sh"
+	temp_usu_save_file="/tmp/usu_updater_$RANDOM.sh"
 	curl $updater_url > $temp_usu_save_file
 	chmod 755 $temp_usu_save_file
 
 	# Start USU
 	# Aguments: Remote Script Dir, Remote Script Filename, Local Script Filename, Arguments/(Git commit)
-	$($temp_usu_save_file "pid2cmd" "pid2cmd.sh" $(readlink -f $0) $2)
-	echo "Whaa? How'd we get here? File a bug report about this!"
-	echo "Mention confusion code number 1717"
-	rm $temp_usu_save_file # Emergancy clean-up
+	source $($temp_usu_save_file "pid2cmd" "pid2cmd.sh" $(readlink -f $0) $2)
+	exit
 
 }
 
