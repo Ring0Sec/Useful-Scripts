@@ -48,7 +48,7 @@ run_updater() {
 	if ! [ -z "$2" ] && [ "$2" != "--force" ] && [ "$strlength" = "41" ]; then # strlength = sizeof(sha1sum) + "\0"
 
 		# TODO
-		ls > /dev/null # Delete this
+		echo "Updating to specific revisions is not yet implemented. Sorry."
 	else
 
 		# Hard-coded program updates URL
