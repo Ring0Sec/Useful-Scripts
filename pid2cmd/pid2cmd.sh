@@ -39,7 +39,7 @@ run_updater() {
 	# Hard-coded program updater URL
 	updater_url="https://raw.github.com/CP-Team-06-0003/Useful-Scripts/master/UsefulScriptUpdater/usu.sh"
 	temp_usu_save_file="/tmp/usu_updater_$RANDOM.sh"
-	curl $updater_url > $temp_usu_save_file 2>&1
+	curl $updater_url > $temp_usu_save_file
 	chmod 755 $temp_usu_save_file
 
 	# Start USU
