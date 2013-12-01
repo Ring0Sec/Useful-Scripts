@@ -29,76 +29,25 @@ show_usage(){
 
 run_updater() {
 
-	# This is a really, really big function, but it shouldn't be spaghetti code
-	# If you think that you've found some minified code that does the same thing,
-	# Just tell me in the GitHub issue tracker. -Josh
-	# Check to see if we have read/write permissions for the updater
+	#Download and run the USU updater script
 	if ! [ -w "/tmp/" ]; then
 
 		echo "ERROR: /tmp/ is not writable! Cannot continue."
 		return -1
-	elif ! [ -w $0 ]; then
-
-		echo "ERROR: The file $0 is not writable! Cannot continue."
-		return -1
 	fi
 
-	# Begin main updater function code
-	strlength=$(echo $2 | wc -c)
-	if ! [ -z "$2" ] && [ "$2" != "--force" ] && [ "$strlength" = "41" ]; then # strlength = sizeof(sha1sum) + "\0"
+	# Hard-coded program updater URL
+	updater_url="https://raw.github.com/CP-Team-06-0003/Useful-Scripts/master/UsefulScriptUpdater/usu.sh"
+	temp_save_file="/tmp/usu_updater_$RANDOM.sh"
+	curl $updater_url > $temp_usu_save_file
+	chmod 755 $temp_usu_save_file
 
-		# TODO
-		echo "Updating to specific revisions is not yet implemented. Sorry."
-	else
-
-		# Hard-coded program updates URL
-		updates_url="https://raw.github.com/CP-Team-06-0003/Useful-Scripts/master/pid2cmd/pid2cmd.sh"
-		temp_save_file="/tmp/pid2cmd-update-data_$RANDOM.sh"
-		curl $updates_url > $temp_save_file # Graham was here
-
-		# Get the md5sums of the two scripts
-		compstr1=$(md5sum $temp_save_file | cut -b-32)
-		compstr2=$(md5sum $0 | cut -b-32)
-
-		if [ "$2" = "--force" ]; then # Check if the user wants to force an update
-
-			echo "WARNING: Forcing update... Your cat and/or computer might spontaneously combust!"
-			cp $temp_save_file $0
-			echo "UPDATE COMPLETE! I think."
-
-		# Use md5sum to see if the script needs an update
-		elif [ "$compstr1" != "$compstr2" ]; then
-
-			echo "INFO: Update found... Type 'y' to apply it!"
-			read -n 1 input # Check and see if the user wants to continue
-
-			if [ $input = "y" ]; then # All hail the nested if statements
-
-				echo -e "\nUPDATING..."
-				# Run a simple sanity check to see if the file downloaded correctly
-
-				if [ $(head -n 1 $temp_save_file) != "#!/bin/bash" ]; then
-
-					echo "ERROR: Download sanity check failed. Check your internet connection."
-					echo "If you are positive that this occured in error, please file a bug report."
-				else # Houston, we're good here
-
-					cp $temp_save_file $0
-					echo "UPDATE COMPLETE! I think."
-				fi
-			else
-
-				echo -e "\nAbort."
-			fi
-		else
-
-			echo "No updates found, sorry."
-			echo "If you are positive that this occured in error, please file a bug report."
-		fi
-
-		# Clean-up
-		rm $temp_save_file
-	fi
+	# Start USU
+	# Aguments: Remote Script Dir, Remote Script Filename, Local Script Filename, Arguments/(Git commit)
+	$($temp_usu_save_file "pid2cmd" "pid2cmd.sh" $(readlink -f $0) $2)
+	echo "Whaa? How'd we get here? File a bug report about this!"
+	echo "Mention confusion code number 1717"
+	rm $temp_usu_save_file # Emergancy clean-up
 
 }
 
