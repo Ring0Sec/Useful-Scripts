@@ -44,7 +44,7 @@ run_updater() {
 
 	# Start USU
 	# Aguments: Remote Script Dir, Remote Script Filename, Local Script Filename, Arguments/(Git commit)
-	source $($temp_usu_save_file "pid2cmd" "pid2cmd.sh" $(readlink -f $0) $2)
+	bash -c "$temp_usu_save_file "pid2cmd" "pid2cmd.sh" $(readlink -f $0) $2"
 	exit
 
 }
