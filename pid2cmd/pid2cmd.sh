@@ -108,7 +108,7 @@ get_all_cmds() {
     			# Echo it
     			echo $pidecho
 	   			continue
-	   		fi
+	   	fi
 
         	if [[ "$2" != "--with-pid" ]]; then
 
