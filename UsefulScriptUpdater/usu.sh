@@ -20,7 +20,7 @@
 usu_do_update() {
 
 	# Tell the user that USU is starting
-	echo "Starting the Useful Script Updater..."
+	echo "[USU Mode] Starting the Useful Script Updater..."
 
 	# This is a really, really big function, but it shouldn't be spaghetti code
 	# If you think that you've found some minified code that does the same thing,
@@ -28,11 +28,13 @@ usu_do_update() {
 	# Check to see if we have read/write permissions for the updater
 	if ! [ -w "/tmp/" ]; then
 
-		echo "ERROR: /tmp/ is not writable! Cannot continue."
+		echo "[USU Mode] ERROR: /tmp/ is not writable! Cannot continue."
+		rm $temp_save_file
 		return -1
 	elif ! [ -w "$3" ]; then
 
-		echo "ERROR: The file $3 is not writable! Cannot continue."
+		echo "[USU Mode] ERROR: The file $3 is not writable! Cannot continue."
+		rm $temp_save_file
 		return -1
 	fi
 
@@ -41,11 +43,11 @@ usu_do_update() {
 	if ! [ -z "$4" ] && [ "$4" != "--force" ] && [ "$strlength" = "41" ]; then # strlength = sizeof(sha1sum) + "\0"
 
 		# TODO
-		echo "Updating to specific revisions is not yet implemented. Sorry."
+		echo "[USU Mode] Updating to specific revisions is not yet implemented. Sorry."
 	else
 
 		# Hard-coded program updates URL
-		echo "Downloading file and checking for update..."
+		echo "[USU Mode] Downloading file and checking for update..."
 		updates_url="https://raw.github.com/CP-Team-06-0003/Useful-Scripts/master/$1/$2"
 		temp_save_file="/tmp/$(echo "$2" | cut -d'.' -f1)-update-data_$RANDOM.sh"
 		curl -# $updates_url > $temp_save_file # Graham was here
@@ -56,9 +58,9 @@ usu_do_update() {
 
 		if [ "$2" = "--force" ]; then # Check if the user wants to force an update
 
-			echo "WARNING: Forcing update... Your cat and/or computer might spontaneously combust!"
+			echo "[USU Mode] WARNING: Forcing update... Your cat and/or computer might spontaneously combust!"
 			cp $temp_save_file $3
-			echo "UPDATE COMPLETE! I think."
+			echo "[USU Mode] UPDATE COMPLETE! I think."
 
 		# Use md5sum to see if the script needs an update
 		elif [ "$compstr1" != "$compstr2" ]; then
@@ -73,12 +75,14 @@ usu_do_update() {
 
 				if [ $(head -n 1 $temp_save_file) != "#!/bin/bash" ]; then
 
-					echo "ERROR: Download sanity check failed. Check your internet connection."
-					echo "If you are positive that this occured in error, please file an USU bug report."
+					echo "[USU Mode] ERROR: Download sanity check failed. Check your internet connection."
+					echo "[USU Mode] If you are positive that this occured in error, please file an USU bug report."
+					rm $temp_save_file
+					return -1
 				else # Houston, we're good here
 
 					cp $temp_save_file $3
-					echo "UPDATE COMPLETE! I think."
+					echo "[USU Mode] UPDATE COMPLETE! I think."
 				fi
 			else
 
@@ -86,14 +90,14 @@ usu_do_update() {
 			fi
 		else
 
-			echo "No updates found, sorry."
-			echo "If you are positive that this occured in error, please file a bug report."
+			echo "[USU Mode] No updates found, sorry."
+			echo "[USU Mode] If you are positive that this occured in error, please file a bug report."
 		fi
 
 		# Clean-up
 		rm $temp_save_file
-		echo "Thanks for using USU!"
-		rm $0 && $("$3") # All done here
+		echo "[USU Mode] Thanks for using USU!"
+		rm $0 && return 0 # All done here
 	fi
 
 }
