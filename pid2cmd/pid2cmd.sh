@@ -73,7 +73,6 @@ get_cmd() {
     			pidecho="PID is missing from the procfs!"
     		fi
 
-
     		# Echo it
     		echo $pidecho
 		else
@@ -118,7 +117,7 @@ get_all_cmds() {
 
         		echo "$i:$($0 $i | sed '/^$/d')" # Same as above, but this time prepend the PID before the command
         	fi
-		fi
+	fi
     done
 
 }
