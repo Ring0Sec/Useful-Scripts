@@ -45,9 +45,10 @@ usu_do_update() {
 	else
 
 		# Hard-coded program updates URL
+		echo "Downloading file and checking for update..."
 		updates_url="https://raw.github.com/CP-Team-06-0003/Useful-Scripts/master/$1/$2"
 		temp_save_file="/tmp/$(echo "$2" | cut -d'.' -f1)-update-data_$RANDOM.sh"
-		curl $updates_url > $temp_save_file # Graham was here
+		curl -# $updates_url > $temp_save_file # Graham was here
 
 		# Get the md5sums of the two scripts
 		compstr1=$(md5sum $temp_save_file | cut -b-32)
