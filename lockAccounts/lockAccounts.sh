@@ -41,38 +41,44 @@ run_updater() {
 }
 
 show_usage() {
-	
-	echo "Uses passwd -l to lock all the user accounts passed as arguments"
+
+	echo -e "pid2cmd version 0.1.0b, by Seth Johnson and Josh Max (Bitwise).\n"
+	echo "ABOUT:" $0 "| Uses passwd -l to lock all the user accounts passed as arguments."
+	echo "USAGE:" $0 "User1 User2 User3... | Lock the given user accounts."
 
 }
 
 run() {
-	
+
 	for i in $@
 	do
-	
+
 		echo "Locking $i"
 		echo $(passwd -l $i)
 	done
-	
+
 }
 
 init() {
-	
+
 	if [ -z "$1" ]; then
-	
+
+		# No arguments have been provided
 		echo "No arguments provided!"
+		show_usage
 	elif [ "$1" = "--help" ]; then
-	
+
+		# SHow help
 		show_usage
 	elif [ "$1" = "--update" ]; then
 
+		# Start the SU updater
         run_updater "$1" "$2" # Check for script updates (Advanced options) force an update to a certain revision
 	else
-	
+
 		run $@
 	fi
 
 }
 
-init $1
+init $@
