@@ -53,7 +53,7 @@ run_updater() {
 get_cmd() {
 
 	# Make sure the argument is an integer
-	if ! [ ! -z "${1###[!0-9]#}" ]; then
+	if ! [ "$1" -eq "$1" ] 2>/dev/null; then
 
 		echo -e "Error, argument is not a valid PID!\n"
 		show_usage;
