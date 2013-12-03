@@ -21,99 +21,60 @@ show_usage(){
 
 	echo -e "pid2cmd version 0.1.2, by Josh Max (Bitwise) and Seth Johnson.\n"
 	echo "ABOUT:" $0 "| Dumps the command used to execute a selected process."
-	echo "USAGE:" $0 "-a, --all | List the commands of all processes."
-	echo "      " $0 "--update (--force) | Check for updates to this script."
+	echo "USAGE:" $0 "-a, --all (--with-pid) | List the commands of all processes."
+	echo "      " $0 "--update (--force/SHA1) | Check for updates to this script."
 	echo "      " $0 "[PID]"
 
 }
 
 run_updater() {
 
-	# This is a really, really big function, but it shouldn't be spaghetti code
-	# If you think that you've found some minified code that does the same thing,
-	# Just tell me in the GitHub issue tracker. -Josh
-	# Check to see if we have read/write permissions for the updater
+	#Download and run the USU updater script
 	if ! [ -w "/tmp/" ]; then
 
 		echo "ERROR: /tmp/ is not writable! Cannot continue."
 		return -1
-	elif ! [ -w $0 ]; then
-
-		echo "ERROR: The file $0 is not writable! Cannot continue."
-		return -1
 	fi
 
-	# Begin main updater function code
-	strlength=$(echo $2 | wc -c)
-	if ! [ -z "$2" ] && [ "$2" != "--force" ] && [ "$strlength" = "41" ]; then # strlength = sizeof(sha1sum) + "\0"
+	# Hard-coded program updater URL
+	echo "Downloading updater..."
+	updater_url="https://raw.github.com/CP-Team-06-0003/Useful-Scripts/master/UsefulScriptUpdater/usu.sh"
+	temp_usu_save_file="/tmp/usu_updater_$RANDOM.sh"
+	curl -# $updater_url > $temp_usu_save_file
+	chmod 755 $temp_usu_save_file
 
-		# TODO
-		echo "Updating to specific revisions is not yet implemented. Sorry."
-	else
-
-		# Hard-coded program updates URL
-		updates_url="https://raw.github.com/CP-Team-06-0003/Useful-Scripts/master/pid2cmd/pid2cmd.sh"
-		temp_save_file="/tmp/pid2cmd-update-data_$RANDOM.sh"
-		curl $updates_url > $temp_save_file # Graham was here
-
-		# Get the md5sums of the two scripts
-		compstr1=$(md5sum $temp_save_file | cut -b-32)
-		compstr2=$(md5sum $0 | cut -b-32)
-
-		if [ "$2" = "--force" ]; then # Check if the user wants to force an update
-
-			echo "WARNING: Forcing update... Your cat and/or computer might spontaneously combust!"
-			cp $temp_save_file $0
-			echo "UPDATE COMPLETE! I think."
-
-		# Use md5sum to see if the script needs an update
-		elif [ "$compstr1" != "$compstr2" ]; then
-
-			echo "INFO: Update found... Type 'y' to apply it!"
-			read -n 1 input # Check and see if the user wants to continue
-
-			if [ $input = "y" ]; then # All hail the nested if statements
-
-				echo -e "\nUPDATING..."
-				# Run a simple sanity check to see if the file downloaded correctly
-
-				if [ $(head -n 1 $temp_save_file) != "#!/bin/bash" ]; then
-
-					echo "ERROR: Download sanity check failed. Check your internet connection."
-					echo "If you are positive that this occured in error, please file a bug report."
-				else # Houston, we're good here
-
-					cp $temp_save_file $0
-					echo "UPDATE COMPLETE! I think."
-				fi
-			else
-
-				echo -e "\nAbort."
-			fi
-		else
-
-			echo "No updates found, sorry."
-			echo "If you are positive that this occured in error, please file a bug report."
-		fi
-
-		# Clean-up
-		rm $temp_save_file
-	fi
+	# Start USU
+	# Aguments: Remote Script Dir, Remote Script Filename, Local Script Filename, Arguments/(Git commit)
+	bash -c "$temp_usu_save_file pid2cmd pid2cmd.sh $(readlink -f $0) $2"
+	exit
 
 }
 
 get_cmd() {
 
 	# Make sure the argument is an integer
-	if ! [ ! -z "${1###[!0-9]#}" ]; then
+	if ! [ "$1" -eq "$1" ] 2>/dev/null; then
 
 		echo -e "Error, argument is not a valid PID!\n"
 		show_usage;
 	else
 
-		if ! [ -f "/proc/$1/cmdline" ]; then # Check if the PID exists
+    	# Check to see if the PID has a valid cmdline (1)
+    	if [ "$1" == "" ]; then
 
-			echo "Error proccessing PID $1. File does not exist."
+    		echo "Unknown PID commandline"
+    	elif ! [ -f "/proc/$1/cmdline" ]; then
+
+    		pidecho="PID is missing /proc/$1/cmdline"
+
+    		# More checks
+    		if ! [ -f "/proc/$1" ]; then
+
+    			pidecho="PID is missing from the procfs!"
+    		fi
+
+    		# Echo it
+    		echo $pidecho
 		else
 
 			cat /proc/$1/cmdline | sed 's/\x0/ /g' | strings # Strip out null characters
@@ -126,10 +87,37 @@ get_all_cmds() {
 
     for i in $(ps -Ao pid); do
 
-        if [ $i != "PID" ]; then # TODO: MAKE THIS LESS HACKISH!
+    	# ps bug: Check to see if the pid is "PID"
+    	if [ "$i" != "PID" ]; then # TODO: MAKE THIS LESS HACKISH!
 
-        	echo $($0 $i) | sed '/^$/d'  # Evaluate PID's bin and add it to output.txt for further processing (below)
-        fi
+    		# Check to see if the PID has a valid cmdline (2)
+    		if [ "$($0 $i | sed '/^$/d')" == "" ]; then
+
+    			echo "$i:Unknown PID commandline"
+    			continue
+    		elif ! [ -f "/proc/$i/cmdline" ]; then
+
+    			pidecho="$i:PID is missing /proc/$i/cmdline"
+
+    			# More checks
+    			if ! [ -f "/proc/$i" ]; then
+
+    				pidecho="$i:PID is missing from the procfs!"
+    			fi
+
+    			# Echo it
+    			echo $pidecho
+	   			continue
+	   	fi
+
+        	if [[ "$2" != "--with-pid" ]]; then
+
+        		echo "$($0 $i | sed '/^$/d')" # Evaluate and print the the commands of all pids and print them to stdout
+        	else
+
+        		echo "$i:$($0 $i | sed '/^$/d')" # Same as above, but this time prepend the PID before the command
+        	fi
+	fi
     done
 
 }
@@ -141,7 +129,7 @@ init() {
 		show_usage # Argument paramater can not be empty
 	elif [ "$1" = "-a" ] || [ "$1" = "--all" ]; then
 
-        get_all_cmds # Print out the commands of all processes
+        get_all_cmds "$1" "$2" # Print out the commands of all processes
 	elif [ "$1" = "--update" ]; then
 
         run_updater "$1" "$2" # Check for script updates (Advanced options) force an update to a certain revision
