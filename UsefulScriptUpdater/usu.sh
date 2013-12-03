@@ -65,12 +65,12 @@ usu_do_update() {
 		# Use md5sum to see if the script needs an update
 		elif [ "$compstr1" != "$compstr2" ]; then
 
-			echo "INFO: Update found... Type 'y' to apply it!"
+			echo "[USU Mode] INFO: Update found... Type 'y' to apply it!"
 			read -n 1 input # Check and see if the user wants to continue
 
 			if [ $input = "y" ]; then # All hail the nested if statements
 
-				echo -e "\nUPDATING..."
+				echo -e "\n[USU Mode] UPDATING..."
 				# Run a simple sanity check to see if the file downloaded correctly
 
 				if [ $(head -n 1 $temp_save_file) != "#!/bin/bash" ]; then
