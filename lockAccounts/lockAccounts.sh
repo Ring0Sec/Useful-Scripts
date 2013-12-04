@@ -42,7 +42,7 @@ run_updater() {
 
 show_usage() {
 
-	echo -e "pid2cmd version 0.1.0b, by Seth Johnson and Josh Max (Bitwise).\n"
+	echo -e "lockAccounts version 0.1.0b, by Seth Johnson and Josh Max (Bitwise).\n"
 	echo "ABOUT:" $0 "| Uses passwd -l to lock all the user accounts passed as arguments."
 	echo "USAGE:" $0 "User1 User2 User3... | Lock the given user accounts."
 
