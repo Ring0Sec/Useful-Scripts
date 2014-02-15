@@ -75,4 +75,4 @@ init() {
 
 }
 
-init $1
+init $@
