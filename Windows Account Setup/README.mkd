@@ -1,0 +1,36 @@
+This PowerShell script will help setup account based settings when hardening Windows machines. If will:  
+
+- Enable automatic updating.  
+
+- Turn Windows firewall on.  
+
+- Setup the account lockout policy (default is 5 attempts).  
+
+- Set up the audit policy (default is audit failure everywhere).  
+
+- Set up the password policy:  
+
+ - Set min password length to 8.  
+
+ - Set max password age to 90 days.  
+
+ - Set password history to 5.  
+
+- Make sure all users have expiring passwords (except Guest).  
+
+- Disable the guest account.  
+
+- Make you turn password complexity on (this currently can't be done in a script).  
+
+- Offer to set user passwords.  
+
+- Offer to disable the administrator account.  
+
+- Offer to rename the administrator account.  
+
+
+### Todo:  
+
+Hide wmic's scary errors/warnings even though it all works.  
+
+Maybe actually check for updates as well as enable them.
