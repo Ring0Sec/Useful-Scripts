@@ -1,4 +1,4 @@
-This PowerShell script will help setup account based settings when hardening Windows machines. If will:  
+This PowerShell script will help setup account based settings when hardening Windows machines. It will:  
 
 - Enable automatic updating.  
 
@@ -27,6 +27,8 @@ This PowerShell script will help setup account based settings when hardening Win
 - Offer to disable the administrator account.  
 
 - Offer to rename the administrator account.  
+
+Even though this is a PowerShell script it relies extensively on Windows' cmd.exe. Tested on Windows 7 and 8. Assumed to work with Vista.
 
 
 ### Todo:  
