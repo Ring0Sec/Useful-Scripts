@@ -76,7 +76,8 @@ function run {
 	# offer to rename the administrator account
 	$rename_admin_account = read-host 'Do you wish to rename the administrator account to "Dude"? (y/n)'
 	if ($rename_admin_account -eq 'y') { 
-		C:\Windows\System32\cmd.exe /C wmic useraccount where name='Administrator' rename 'Dude'
+		$adminAccount = Get-WMIObject Win32_UserAccount -Filter "Name='Administrator'"
+		$adminAccount.Rename('Dude')
 		}
 	else {
 	exit
