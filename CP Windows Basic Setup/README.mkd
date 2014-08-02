@@ -35,4 +35,8 @@ Even though this is a PowerShell script it relies extensively on Windows' cmd.ex
 
 Hide wmic's scary errors/warnings even though it all works.  
 
-~~Maybe actually check for updates as well as enable them.~~ Done. No easy way to do this post Windows 8, so it just opens the updates section of the control panel for now.
+~~Maybe actually check for updates as well as enable them.~~ Done. No easy way to do this post Windows 8, so it just opens the updates section of the control panel for now.  
+
+Setup Windows Defender?  
+
+Install anti-virus?
