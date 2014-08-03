@@ -1,6 +1,7 @@
 ################################################################################
-# If you would like to add a function, tack the actual funtion onto the end of the functions block.
-# Make sure you add its name at the end of the $functions array (on line 9) as well.
+# If you would like to add a function, tack the actual function onto the end of the functions block.
+# Make sure you add its name at the end of the $functions array (on line 12) as well.
+# Feel free to edit the intro to mention your function.
 ################################################################################
 
 
@@ -8,7 +9,7 @@
 #							Any predefined variables
 ################################################################################
 
-$functions = @("enableWindowsUpdate","enableFirewall","setLocalSecurityPolicies","setupAuditing","disableGuestAccount","makePasswordsExpire","renameAdministratorAccount","disableAdministratorAccount","setUserPasswords","autoMode")
+$functions = @("enableWindowsUpdate","enableFirewall","setLocalSecurityPolicies","setupAuditing","disableGuestAccount","makePasswordsExpire","renameAdministratorAccount","disableAdministratorAccount","setUserPasswords","installMalwarebytes","installAvast","autoMode")
 $intro = 'This PowerShell script will help setup some basic settings when hardening Windows machines. It will:
 
     Enable automatic updating.
@@ -38,6 +39,8 @@ $intro = 'This PowerShell script will help setup some basic settings when harden
     Offer to disable the administrator account.
 
     Offer to rename the administrator account.
+	
+	Install Avast! Anti Virus (providing the installer file named ''avast.exe'' exists in the working directory) and malwarebytes (providing the installer file named ''malwarebytes.exe'' exists in the working directory.
 
 Even though this is a PowerShell script it relies extensively on Windows'' cmd.exe. Tested on Windows 7 and 8. Assumed to work with Vista.'
 
@@ -129,6 +132,27 @@ Even though this is a PowerShell script it relies extensively on Windows'' cmd.e
 			if ($i -eq 'HomeGroupUser$') { continue } # We don't need to worry about the homegroup user
 			C:\Windows\System32\cmd.exe /C net user $i $password # set the user password to the password defined above --^
 			}
+		}
+	}
+	
+	function installMalwarebytes {
+		if (Test-Path malwarebytes.exe) {
+			Write-host 'Found malwarebytes, installing...'
+			Invoke-expression ".\\malwarebytes.exe /silent"
+		}
+		else {
+			Write-host 'No file with the name ''malwarebytes.exe'' found in the working directory, aborting.'
+		}
+	}
+	
+	function installAvast {
+		if (Test-path avast.exe) {
+			Write-host 'Found avast, installing...'
+			Invoke-expression ".\\avast.exe /silent /nooffers"
+			Write-host 'This may take some time.'
+		}
+		else {
+			Write-host 'No file with the name ''avast.exe'' found in the working directroy, aborting.'
 		}
 	}
 	

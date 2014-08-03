@@ -28,6 +28,8 @@ This PowerShell script will help setup some basic settings when hardening Window
 
 - Offer to rename the administrator account.  
 
+- Install Avast! Anti Virus (providing the installer file named ''avast.exe'' exists in the working directory) and malwarebytes (providing the installer file named ''malwarebytes.exe'' exists in the working directory.
+
 Even though this is a PowerShell script it relies extensively on Windows' cmd.exe. Tested on Windows 7 and 8. Assumed to work with Vista.
 
 
