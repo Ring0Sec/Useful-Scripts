@@ -1,6 +1,8 @@
 #/bin/bash
 echo HistProtect at le service!
-echo Straight up stolen from StackOverflow
+echo Straight up stolen from StackOverflow, then improved
+# http://superuser.com/questions/308882/secured-bash-history-usage
+echo MOST of this is tested
 echo But it gets the job done so why would I rewrite it
 echo Making append-only
 if [ -f /root/.bash_history ] ; then chattr +a /root/.bash_history ; fi
