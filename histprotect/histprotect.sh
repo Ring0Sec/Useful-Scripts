@@ -3,12 +3,12 @@ echo HistProtect at le service!
 echo Straight up stolen from StackOverflow
 echo But it gets the job done so why would I rewrite it
 echo Making append-only
-chattr +a /root/.bash_history 
-chattr +a /root/.bash_profile 
-chattr +a /root/.bash_login 
-chattr +a /root/.profile 
-chattr +a /root/.bash_logout 
-chattr +a /root/.bashrc
+if [ -f /root/.bash_history ] ; then chattr +a /root/.bash_history ; fi
+if [ -f /root/.bash_profile ] ; then chattr +a /root/.bash_profile  ; fi
+if [ -f /root/.bash_login ] ; then chattr +a /root/.bash_login  ; fi
+if [ -f /root/.profile ] ; then chattr +a /root/.profile  ; fi
+if [ -f /root/.bash_logout ] ; then chattr +a /root/.bash_logout  ; fi 
+if [ -f /root/.bashrc ] ; then chattr +a /root/.bashrc  ; fi
 echo Hardening environment variables
 shopt -s histappend 
  echo "readonly PROMPT_COMMAND=\"history -a\"" >> /root/.bashrc
@@ -23,8 +23,8 @@ chmod 750 tcsh
 chmod 750 ksh
 
 echo Protecting any other users on the system
-for i in $(find / -name .bash_history); do
-chattr +a $i
+for i in $(find / -type f \( -name .bash_history -o -name .bashrc \)); do
+if [ -f $i ] ; then chattr +a $i ; fi
 done
 for i in $(find / -name .bashrc); do
  echo "readonly PROMPT_COMMAND=\"history -a\"" >> $i
