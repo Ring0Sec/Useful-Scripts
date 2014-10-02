@@ -21,3 +21,16 @@ echo readonly HISTIGNORE >> /root/.bashrc
 chmod 750 csh 
 chmod 750 tcsh 
 chmod 750 ksh
+
+echo Protecting any other users on the system
+for i in $(find / -name .bash_history); do
+chattr +a $i
+done
+for i in $(find / -name .bashrc); do
+echo readonly HISTFILE >> $i
+echo readonly HISTFILESIZE  >> $i
+echo readonly HISTSIZE  >> $i
+echo readonly HISTCMD  >> $i
+echo readonly HISTCONTROL >> $i
+echo readonly HISTIGNORE >> $i
+done
