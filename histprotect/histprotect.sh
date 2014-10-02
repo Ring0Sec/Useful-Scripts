@@ -27,6 +27,7 @@ for i in $(find / -name .bash_history); do
 chattr +a $i
 done
 for i in $(find / -name .bashrc); do
+ echo "readonly PROMPT_COMMAND=\"history -a\"" >> $i
 echo readonly HISTFILE >> $i
 echo readonly HISTFILESIZE  >> $i
 echo readonly HISTSIZE  >> $i
