@@ -7,8 +7,8 @@ Features:
 
 * Mark .bash_history as append-only✓
 * Make sure that the HISTFILE variable is read-only.✓
-* Check to see if the user is echoing fake history to the file.
-* Prevent .bash_history from being read by other users.
+* Check to see if the user is echoing fake history to the file.✓
+* Prevent .bash_history from being read by other users.✓
 * Intelligent auto protect mode.
 * Plus more!
 
