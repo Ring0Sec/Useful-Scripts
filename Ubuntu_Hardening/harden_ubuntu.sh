@@ -11,11 +11,12 @@ list_all_services() {
 }
 
 set_update_settings() {
-# these are the recommended settings set in software-properties-gtk
-    echo "APT::Periodic::Update-Package-Lists "2";
-    APT::Periodic::Download-Upgradeable-Packages "1";
-    APT::Periodic::AutocleanInterval "0";
-    APT::Periodic::Unattended-Upgrade "1";" > /etc/apt/apt.conf.d/10periodic
+    # these are the recommended settings set in software-properties-gtk
+    apt_config=/etc/apt/apt.conf.d/10periodic
+    echo "APT::Periodic::Update-Package-Lists \"2\";" > $apt_config
+    echo "APT::Periodic::Download-Upgradeable-Packages \"1\";" >> $apt_config
+    echo "APT::Periodic::AutocleanInterval \"0\";" >> $apt_config
+    echo "APT::Periodic::Unattended-Upgrade \"1\";" >> $apt_config
     echo "Set apt update settings"
 }
 
