@@ -95,12 +95,13 @@ list_sensitive_groups() {
 }
 
 change_user_passwords() {
-  pass='CyberPatriot!'
-  echo "Changing all user passwords to 'CyberPatriot!''"
-  echo 'NEVER RUN THIS IN PROD!'
-  for i in $(ls /home); do # ls like a boss
-    chpasswd <<< "$i:$pass"
-  done
+    pass='CyberPatriot!'
+    echo "Changing all user passwords to $pass"
+    echo 'NEVER RUN THIS IN A PRODUCTION IMAGE!'
+    for i in $(ls /home); do # ls like a boss
+        # globs be hatin on us
+        chpasswd <<< "$i:$pass"
+    done
 }
 
 echo "##### Setting apt update settings #####"
@@ -129,7 +130,9 @@ find_media_files_in_dir
 
 read -p "Would you like to change all user passwords?" answer
 if [[ $answer == [yY] ]]; then
-  change_user_passwords
+    change_user_passwords
+else
+    echo "Not changing user passwords"
 fi
 
 echo "##### Listing users in sensitive groups #####"
