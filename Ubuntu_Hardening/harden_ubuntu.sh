@@ -87,11 +87,20 @@ check_no_pass() {
 
 list_sensitive_groups() {
     echo "Members of group 'adm':"
-    grep adm /etc/group | cut -d ':' -f 4 
+    grep adm /etc/group | cut -d ':' -f 4
     echo "Members of group 'root':"
     grep root /etc/group | cut -d ':' -f 4
     echo "Members of group 'sudo':"
     grep sudo /etc/group | cut -d ':' -f 4
+}
+
+change_user_passwords() {
+  pass='CyberPatriot!'
+  echo "Changing all user passwords to 'CyberPatriot!''"
+  echo 'NEVER RUN THIS IN PROD!'
+  for i in $(ls /home); do # ls like a boss
+    chpasswd <<< "$i:$pass"
+  done
 }
 
 echo "##### Setting apt update settings #####"
@@ -117,6 +126,11 @@ check_no_pass
 
 echo "##### Searching for any media files in /home #####"
 find_media_files_in_dir
+
+read -p "Would you like to change all user passwords?" answer
+if [[ $answer == [yY] ]]; then
+  change_user_passwords
+fi
 
 echo "##### Listing users in sensitive groups #####"
 list_sensitive_groups
