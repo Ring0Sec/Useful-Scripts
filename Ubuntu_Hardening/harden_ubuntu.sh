@@ -105,17 +105,17 @@ change_user_passwords() {
 }
 
 disable_guest_account() {
-  echo 'allow-guest=false' >> /etc/lightdm/lightdm.conf
-  echo "Disabled guest account."
+    echo 'allow-guest=false' >> /etc/lightdm/lightdm.conf
+    echo "Disabled guest account."
 }
 
 setup_password_history() {
-  echo "Setting up password history.."
-  # making these seperate commands for readability's sake as well as mutability.
-  sed -i.bak -e 's/PASS_MAX_DAYS\t[[:digit:]]\+/PASS_MAX_DAYS\t90/' /etc/login.defs
-  sed -i -e 's/PASS_MIN_DAYS\t[[:digit:]]\+/PASS_MIN_DAYS\t10/' /etc/login.defs
-  sed -i -e 's/PASS_WARN_AGE\t[[:digit:]]\+/PASS_WARN_AGE\t7/' /etc/login.defs
-  echo "Max days set to: 90, Min days: 10, Warn age: 7."
+    echo "Setting up password history.."
+    # making these seperate commands for readability's sake as well as mutability.
+    sed -i.bak -e 's/PASS_MAX_DAYS\t[[:digit:]]\+/PASS_MAX_DAYS\t90/' /etc/login.defs
+    sed -i -e 's/PASS_MIN_DAYS\t[[:digit:]]\+/PASS_MIN_DAYS\t10/' /etc/login.defs
+    sed -i -e 's/PASS_WARN_AGE\t[[:digit:]]\+/PASS_WARN_AGE\t7/' /etc/login.defs
+    echo "Max days set to: 90, Min days: 10, Warn age: 7."
 }
 
 disable_root_account() {
