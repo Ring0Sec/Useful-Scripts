@@ -13,7 +13,7 @@ list_all_services() {
 set_update_settings() {
     # these are the recommended settings set in software-properties-gtk
     apt_config=/etc/apt/apt.conf.d/10periodic
-    echo "APT::Periodic::Update-Package-Lists \"2\";" > $apt_config
+    echo "APT::Periodic::Update-Package-Lists \"1\";" > $apt_config
     echo "APT::Periodic::Download-Upgradeable-Packages \"1\";" >> $apt_config
     echo "APT::Periodic::AutocleanInterval \"0\";" >> $apt_config
     echo "APT::Periodic::Unattended-Upgrade \"1\";" >> $apt_config
@@ -104,6 +104,25 @@ change_user_passwords() {
     done
 }
 
+disable_guest_account() {
+  echo 'allow-guest=false' >> /etc/lightdm/lightdm.conf
+  echo "Disabled guest account."
+}
+
+setup_password_history() {
+  echo "Setting up password history.."
+  # making these seperate commands for readability's sake as well as mutability.
+  sed -i.bak -e 's/PASS_MAX_DAYS\t[[:digit:]]\+/PASS_MAX_DAYS\t90/' /etc/login.defs
+  sed -i -e 's/PASS_MIN_DAYS\t[[:digit:]]\+/PASS_MIN_DAYS\t10/' /etc/login.defs
+  sed -i -e 's/PASS_WARN_AGE\t[[:digit:]]\+/PASS_WARN_AGE\t7/' /etc/login.defs
+  echo "Max days set to: 90, Min days: 10, Warn age: 7."
+}
+
+disable_root_account() {
+  passwd -l root
+  echo "Locked root account."
+}
+
 echo "##### Setting apt update settings #####"
 set_update_settings
 
@@ -128,12 +147,24 @@ check_no_pass
 echo "##### Searching for any media files in /home #####"
 find_media_files_in_dir
 
+echo "##### Disabling the guest account #####"
+disableGuestAccount
+
+echo "##### Setting up password history #####"
+setup_password_history
+
 read -p "Would you like to change all user passwords?" answer
 if [[ $answer == [yY] ]]; then
     change_user_passwords
 else
     echo "Not changing user passwords"
 fi
+
+read -p "Would you like to lock the root account?" answer
+if [[ $answer == [yY] ]]; then
+    disable_root_account
+else
+    echo "Not locking root account."
 
 echo "##### Listing users in sensitive groups #####"
 list_sensitive_groups
