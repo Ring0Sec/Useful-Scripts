@@ -1,0 +1,84 @@
+#Requires -RunAsAdministrator
+
+function enableFirewall {
+	# enable windows firewall
+	Write-host 'Enabling Windows firewall...'
+	# This only works in > Windows 8 and Server 2012
+	#  Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
+	# fall back to older system
+	netsh advfirewall set allprofiles state on
+}
+
+function disableGuestAccount {
+	# disable the guest account
+	Write-host 'Disabling the guest account...'
+	C:\Windows\System32\cmd.exe /C net user Guest /active:no
+}
+
+function setUserPasswords {
+	# Offer to set all user passwords
+	Write-host 'Do you want to set all user passwords to "CyberPatriot1" (y/n)?'
+	$set_passwords = read-host 'WARNING:  This is a quick, easy way to ensure all accounts on your CP image are password protected, but IT SHOULD NEVER BE DONE ON A PRODUCTION MACHINE!'
+	if ($set_passwords -eq 'y') {
+	$password = 'CyberPatriot1' # set what the user password will be (you can change this)
+	$accounts = get-wmiobject Win32_UserAccount -filter 'LocalAccount=TRUE' | select-object -expandproperty Name # get a list of user accounts
+
+	foreach ($i in $accounts) {
+		if ($i -eq 'HomeGroupUser$') { continue } # We don't need to worry about the homegroup user
+		C:\Windows\System32\cmd.exe /C net user $i $password # set the user password to the password defined above --^
+		}
+	}
+}
+
+
+function enableWindowsUpdate {
+	# setup the windows update object and enable windows update
+	Write-host 'Enabling automatic updating and including recommended updates...'
+	$updateObject = (New-Object -com "Microsoft.Update.AutoUpdate").Settings # turn automatic updates on
+	$updateObject.NotificationLevel = 4 # make sure recommended updates are included
+	$updateObject.IncludeRecommendedUpdates = "true"
+	$updateObject.save() # save the changes
+	$openUpdate = Read-host 'Do you wish to check for updates now (y/n)?'
+	if ($openUpdate -eq 'y') {
+	control update # start the control panel for windows update
+	}
+}
+
+function setLocalSecurityPolicies {
+	# set up local security policies
+	Write-host 'Set account lockout to 5...'
+	C:\Windows\System32\cmd.exe /C net accounts /lockoutthreshold:5 # Set account lockout to 5
+	C:\Windows\System32\cmd.exe /C net accounts /MINPWLEN:8 /MAXPWAGE:90 /UNIQUEPW:5 # set min length to 8, max age to 90 and history to 5
+	# Advise the user to turn complexity requirements on.
+	Write-host 'Remember to enable "Password must meet complexity requirements under "Account Policies" -> "Password Policy".'
+	Start-process secpol.msc -Wait
+}
+
+function setupAuditing {
+	# Set up auditing
+	Write-host 'Setting up auditing...'
+	$auditCategories = @("Account Logon","Account Management","Detailed Tracking","DS Access","Logon/Logoff","Object Access","Policy Change","Privilege Use","System") # audit categories as of Windows 8.1 U1. Do not change this unless you know what you are doing
+	foreach ($i in $auditCategories) {
+				C:\Windows\System32\cmd.exe /C auditpol.exe /set /category:"$i" /failure:enable # set all audit categories (defined in $auditCategories) to audit failures
+			}
+}
+
+function findMedia {
+    $items = Get-ChildItem -Path C:\Users\wgssa -Include *.mp3,*.mp4,*.wma,*.mov,*.wmv,*.wav  -Recurse
+		Write-host "$items"
+}
+
+Write-host "##### Enabling Windows Firewall #####"
+enableFirewall()
+Write-host "##### Disabling the guest account #####"
+disableGuestAccount()
+Write-host "##### Offering to set user passwords #####"
+setUserPasswords()
+Write-host "##### Enabling Windows Update #####"
+enableWindowsUpdate()
+Write-host "##### Setting local security policies #####"
+setLocalSecurityPolicies()
+Write-host "##### Setting up auditing #####"
+setupAuditing()
+Write-host "##### Attempting to find media #####"
+findMedia()
